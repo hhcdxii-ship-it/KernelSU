@@ -1,0 +1,30 @@
+name: 手搓官方纯净版KernelSU管理器
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: 设置 JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    - name: 设置 Android SDK
+      uses: android-actions/setup-android@v3
+    - name: 设置 Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: 编译管理器 APK (手搓环节)
+      run: |
+        cd manager
+        chmod +x gradlew
+        ./gradlew assembleDebug \
+          -PKSU_PACKAGE_NAME=com.your.custom.ksu \
+          -PKSU_NAME="我的专属KSU管理器"
+    - name: 上传 APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: My-Official-KernelSU-APK
+        path: manager/app/build/outputs/apk/debug/*.apk
